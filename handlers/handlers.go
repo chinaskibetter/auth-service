@@ -15,17 +15,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type TokenRequest struct {
-	UserID string `json:"userId"`
-}
-
-type TokenDetails struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
-}
-
 func GetTokensHandler(w http.ResponseWriter, r *http.Request) {
-	var tokenReq TokenRequest
+	var tokenReq models.TokenRequest
 	_ = json.NewDecoder(r.Body).Decode(&tokenReq)
 
 	accessToken := jwt.New(jwt.SigningMethodHS512)
@@ -48,7 +39,7 @@ func GetTokensHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(TokenDetails{
+	json.NewEncoder(w).Encode(models.TokenDetails{
 		AccessToken:  accessTokenString,
 		RefreshToken: refreshHashString,
 	})
@@ -80,7 +71,7 @@ func RefreshTokensHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	accessTokenString, _ := accessToken.SignedString([]byte("55555")) // секретный JWT токен
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(TokenDetails{
+	json.NewEncoder(w).Encode(models.TokenDetails{
 		AccessToken:  accessTokenString,
 		RefreshToken: refreshHashString,
 	})
